@@ -1,20 +1,26 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# SVG Placeholder Generator
 
-# Run and deploy your AI Studio app
+Un'utility web professionale, sviluppata interamente lato client, per la generazione istantanea di immagini segnaposto (placeholder) in formato SVG. Questo strumento permette di creare asset grafici leggeri, personalizzabili e pronti all'uso per progetti di web design e sviluppo.
 
-This contains everything you need to run your app locally.
+## 🚀 Funzionalità
 
-View your app in AI Studio: https://ai.studio/apps/drive/1-dX2xsy414Q12Nik0UAVjC8OdiVprCxr
+* **Generazione Real-time**: Visualizzazione istantanea dell'anteprima durante la modifica dei parametri.
+* **Personalizzazione Completa**: Controllo totale su dimensioni (larghezza/altezza), colori di sfondo, colori del testo e dimensione del font.
+* **Export Flessibile**: Possibilità di copiare il codice sorgente SVG direttamente negli appunti o scaricare il file .svg.
+* **Interfaccia Moderna**: Design responsive e curato realizzato con Tailwind CSS per un'esperienza utente fluida.
+* **Etichette Dinamiche**: Supporto per testo personalizzato o generazione automatica della risoluzione come etichetta.
 
-## Run Locally
+## 🛠️ Tech Stack
 
-**Prerequisites:**  Node.js
+* **React 19**: Per la gestione dello stato e l'interfaccia utente reattiva.
+* **TypeScript**: Per un codice robusto e tipizzato.
+* **Vite**: Come build tool ultra-rapido per lo sviluppo frontend.
+* **Tailwind CSS**: Per lo styling utility-first e il layout responsive.
 
+## 📄 Licenza
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Questo progetto è distribuito sotto licenza MIT.
+
+---
+
+**Sviluppato da Ilenia Unida**.
