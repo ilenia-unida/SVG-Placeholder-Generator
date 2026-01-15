@@ -1,0 +1,5 @@
+{
+  "name": "SVG Placeholder Generator",
+  "description": "A high-performance, client-side utility for generating custom SVG placeholder images with real-time previews and code export.",
+  "requestFramePermissions": []
+}

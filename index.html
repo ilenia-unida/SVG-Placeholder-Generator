@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Placeholder Generator</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .preview-shadow {
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        }
+
+        /* Forza la visibilità del testo negli input e nel codice */
+        input,
+        textarea {
+            color: #0f172a !important;
+            /* Slate 900 per massima leggibilità */
+        }
+
+        textarea.code-area {
+            color: #ffffff !important;
+            /* Bianco puro per contrasto massimo su nero */
+            line-height: 1.6;
+            font-weight: 500;
+        }
+    </style>
+    <!-- Babel Standalone per compilare JSX nel browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+    <div id="root" class="w-full flex justify-center items-center"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useMemo } from 'react';
+        import ReactDOM from 'react-dom/client';
+
+        const Icons = {
+            Photo: (props) => (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6.75a1.5 1.5 0 0 0-1.5-1.5H3.75a1.5 1.5 0 0 0-1.5 1.5v12.909a1.5 1.5 0 0 0 1.5 1.5Z" />
+                </svg>
+            ),
+            Copy: (props) => (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 1.927-.184" />
+                </svg>
+            ),
+            Download: (props) => (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" {...props}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+            )
+        };
+
+        const App = () => {
+            const [state, setState] = useState({
+                width: 600,
+                height: 400,
+                bgColor: '#3b82f6',
+                textColor: '#ffffff',
+                label: '',
+                fontSize: 48,
+            });
+
+            const [copied, setCopied] = useState(false);
+
+            const svgCode = useMemo(() => {
+                const labelText = state.label || `${state.width} × ${state.height}`;
+                return `<svg xmlns="http://www.w3.org/2000/svg" width="${state.width}" height="${state.height}" viewBox="0 0 ${state.width} ${state.height}">
+  <rect width="100%" height="100%" fill="${state.bgColor}" />
+  <text x="50%" y="50%" font-family="sans-serif" font-weight="bold" font-size="${state.fontSize}" fill="${state.textColor}" text-anchor="middle" dominant-baseline="central">${labelText}</text>
+</svg>`;
+            }, [state]);
+
+            const handleCopy = () => {
+                navigator.clipboard.writeText(svgCode);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            const handleDownload = () => {
+                const blob = new Blob([svgCode], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `placeholder-${state.width}x${state.height}.svg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            };
+
+            const inputClasses = "w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-950 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm";
+            const btnClasses = "flex-1 py-3 px-6 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95";
+
+            return (
+                <div className="w-full max-w-5xl px-4 py-12 flex flex-col items-center">
+                    <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 bg-white p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-slate-200">
+
+                        {/* Pannello Controlli */}
+                        <div className="space-y-8">
+                            <div>
+                                <h1 className="text-3xl font-black text-slate-900 flex items-center gap-3 mb-2 tracking-tighter">
+                                    <Icons.Photo className="w-8 h-8 text-blue-600" />
+                                    SVG GENERATOR
+                                </h1>
+                                <p className="text-slate-500 text-sm font-semibold">Parametri di generazione istantanea.</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6">
+                                <label className="block">
+                                    <span className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Width (px)</span>
+                                    <input type="number" value={state.width} onChange={e => setState({ ...state, width: e.target.value })} className={inputClasses} />
+                                </label>
+                                <label className="block">
+                                    <span className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Height (px)</span>
+                                    <input type="number" value={state.height} onChange={e => setState({ ...state, height: e.target.value })} className={inputClasses} />
+                                </label>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <label className="block">
+                                    <span className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Background</span>
+                                    <div className="flex gap-2">
+                                        <input type="color" value={state.bgColor} onChange={e => setState({ ...state, bgColor: e.target.value })} className="h-10 w-12 border-2 border-slate-100 rounded-lg cursor-pointer flex-shrink-0" />
+                                        <input type="text" value={state.bgColor} onChange={e => setState({ ...state, bgColor: e.target.value })} className={inputClasses} />
+                                    </div>
+                                </label>
+                                <label className="block">
+                                    <span className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Text Color</span>
+                                    <div className="flex gap-2">
+                                        <input type="color" value={state.textColor} onChange={e => setState({ ...state, textColor: e.target.value })} className="h-10 w-12 border-2 border-slate-100 rounded-lg cursor-pointer flex-shrink-0" />
+                                        <input type="text" value={state.textColor} onChange={e => setState({ ...state, textColor: e.target.value })} className={inputClasses} />
+                                    </div>
+                                </label>
+                            </div>
+
+                            <label className="block">
+                                <span className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Custom Text</span>
+                                <input type="text" value={state.label} onChange={e => setState({ ...state, label: e.target.value })} className={inputClasses} placeholder="300x200" />
+                            </label>
+
+                            <label className="block">
+                                <span className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Font Size ({state.fontSize}px)</span>
+                                <input type="range" min="10" max="300" value={state.fontSize} onChange={e => setState({ ...state, fontSize: e.target.value })} className="w-full h-3 bg-slate-200 rounded-xl appearance-none cursor-pointer accent-blue-600" />
+                            </label>
+                        </div>
+
+                        {/* Pannello Anteprima e Export */}
+                        <div className="flex flex-col space-y-6">
+                            <div className="flex-1 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 p-6 flex flex-col items-center justify-center overflow-auto min-h-[350px] relative shadow-inner">
+                                <div dangerouslySetInnerHTML={{ __html: svgCode }} className="preview-shadow transition-all duration-300 transform hover:scale-[1.01] max-w-full" />
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={handleCopy}
+                                        className={`${btnClasses} ${copied ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200'}`}
+                                    >
+                                        <Icons.Copy className="w-4 h-4" />
+                                        {copied ? 'Copiato' : 'Copia Codice'}
+                                    </button>
+                                    <button
+                                        onClick={handleDownload}
+                                        className={`${btnClasses} bg-blue-600 text-white hover:bg-blue-500 shadow-blue-200`}
+                                    >
+                                        <Icons.Download className="w-4 h-4" />
+                                        Scarica SVG
+                                    </button>
+                                </div>
+
+                                <div className="relative group overflow-hidden rounded-2xl border border-slate-900 bg-slate-950 shadow-2xl">
+                                    <textarea
+                                        readOnly
+                                        value={svgCode}
+                                        className="code-area w-full h-36 p-6 font-mono text-xs focus:outline-none resize-none bg-transparent"
+                                        spellCheck="false"
+                                    />
+                                    <div className="absolute bottom-3 right-4 opacity-40 pointer-events-none">
+                                        <span className="text-[10px] font-black text-white uppercase tracking-[0.3em]">SVG Code</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <footer className="mt-10 text-center text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                        SVG Generator • Sviluppato da Ilenia Unida
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+    <script type="module" src="/index.tsx"></script>
+</body>
+
+</html>
